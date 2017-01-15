@@ -1,0 +1,38 @@
+<html>
+<head>
+	<meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>HereACG</title>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
+	<link rel="stylesheet" href="./style.css">
+</head>
+<body>
+
+	<div id="app">
+
+    <nav class="navbar fixed-top navbar-light" style="background-color: #e3f2fd;">
+      <a class="navbar-brand" href="http://hereacg.com">HereACG</a>
+      <div class="float-xs-right" v-if="user"><p>{{ user.displayName }}</div>
+    </nav>
+
+    <div class="alert alert-warning" v-if='hasErr' role="alert">
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+  <span aria-hidden="true">&times;</span>
+</button>
+<h4 class="alert-heading" v-text="errTitle"></h4>
+{{errMsg}}
+</div>
+		<router-view></router-view>
+    </div> 
+	</div>
+
+	<!-- Load important javascript -->
+	<script src="https://www.gstatic.com/firebasejs/3.6.5/firebase.js"></script>
+  <script src="./firebaseConfig.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
+	<script src="https://unpkg.com/vue/dist/vue.js"></script>
+	<script src="https://unpkg.com/vue-router/dist/vue-router.js"></script>
+	<script src="./main.js"></script>
+</body>
+</html>
