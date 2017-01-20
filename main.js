@@ -74,14 +74,15 @@ loginPage = {
       }
     }
   },
-  template: '<div class="container"> <form class="form-signin" v-on:submit.stop.prevent> <h2 class="form-signin-heading">Please Enter</h2> <label for="inputEmail" class="sr-only">Email address</label> <input type="email" id="inputEmail" class="form-control" placeholder="Email address" v-model.lazy="email" required autofocus> <label for="inputPassword" class="sr-only">Password</label> <input type="password" id="inputPassword" class="form-control" placeholder="Password" v-model.trim="password" required> <label for="inputPasswordAgain" class="sr-only">Password again</label> <input v-if="isRegister" type="password" id="inputPasswordAgain" class="form-control" placeholder="Password again" v-model.trim="passwordAgain" required> <button class="btn btn-lg btn-primary btn-block" v-on:click="withEmail">Sign in</button> <button class="btn btn-lg btn-secondary btn-block" v-on:click="registerWithEmail" >Sign up</button> <div id="id_thirdparty"> <div class="dropdown"> <button class="btn btn-lg btn-block btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> Third Party Login </button> <div class="dropdown-menu" aria-labelledby="dropdownMenuButton"> <a class="dropdown-item" v-on:click="withTPL(\'google\')">Google</a> <a class="dropdown-item" v-on:click="withTPL(\'github\')">GitHub</a> <a class="dropdown-item" v-on:click="withTPL(\'twitter\')">Twitter</a> </div> </div> </div> </form>'
+  template: '<div class="container"> <form class="form-signin" v-on:submit.stop.prevent> <h2 class="form-signin-heading">Please Enter</h2> <label for="inputEmail" class="sr-only">Email address</label> <input type="email" id="inputEmail" class="form-control" placeholder="Email address" v-model.lazy="email" required autofocus> <label for="inputPassword" class="sr-only">Password</label> <input type="password" id="inputPassword" class="form-control" placeholder="Password" v-model.trim="password" required> <label for="inputPasswordAgain" class="sr-only">Password again</label> <input v-if="isRegister" type="password" id="inputPasswordAgain" class="form-control" placeholder="Password again" v-model.trim="passwordAgain" required> <button class="btn btn-lg btn-primary btn-block" v-on:click="withEmail" v-if="!isRegister">Sign in</button> <button class="btn btn-lg btn-secondary btn-block" v-on:click="registerWithEmail" >Sign up</button> <div id="id_thirdparty"> <div class="dropdown"> <button class="btn btn-lg btn-block btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> Third Party Login </button> <div class="dropdown-menu" aria-labelledby="dropdownMenuButton"> <a class="dropdown-item" v-on:click="withTPL(\'google\')">Google</a> <a class="dropdown-item" v-on:click="withTPL(\'github\')">GitHub</a> <a class="dropdown-item" v-on:click="withTPL(\'twitter\')">Twitter</a> </div> </div> </div> </form>'
 };
 
 jumpOutPage = {
   name: "jump_out_page",
   data: function() {
     return {
-      'querySet': this.$router.currentRoute.query
+      'querySet': this.$router.currentRoute.query,
+      'isProgress': false
     };
   },
   computed: {
@@ -104,7 +105,27 @@ jumpOutPage = {
     }
   },
   methods: {
+    'showAlert': function(msg, title) {
+      if (title == null) {
+        title = 'Warning';
+      }
+      alert('showAlert');
+      this.$parent.errMsg = msg;
+      this.$parent.errTitle = title;
+      return this.$parent.hasErr = true;
+    },
+    'toggleButton': function() {
+      var b;
+      b = $('id_jumpButton');
+      if (b.hasClass('disabled')) {
+        return b.removeClass('disabled');
+      } else {
+        return b.addClass('disabled');
+      }
+    },
     'jumpOut': function() {
+      this.isProgress = true;
+      this.toggleButton();
       return $.post({
         'url': this.querySet.callback,
         'data': {
@@ -118,10 +139,16 @@ jumpOutPage = {
         if (window.event) {
           return window.event.returnValue = false;
         }
+      }).fail(function(error) {
+        console.log('Error Happened:');
+        $.each(error, function(k, v) {
+          return console.log("Error: k => " + k + ", v=> " + v);
+        });
+        return this.showAlert('Login Failed. Please check callback url.');
       });
     }
   },
-  template: '<div class="container"> <div class="card"> <div class="card-block"> <h2 class="card-title"> {{ user.displayName }} </h2> <h4 class="card-subtitle mb-2 text-muted"> Are you sure to share your infomation with {{ querySet.appName }}? </h4> <p class="card-text"> These infomation will get by it: </p> </div> <ul class="list-group list-group-flush"> <li class="list-group-item"> Indicate your identity </li> <li class="list-group-item"> Get your username </li> <li class="list-group-item"> Get your avatar </li> <div class="card-block"> <p class="card-text text-muted">Once you continue, you will be redirected to {{ querySet.callback }}</p> <h6 class="card-subtitle">Continue or Not?</h6> <button class="btn btn-lg" v-on:click="jumpOut">Continue</button> </div> </div> </div>'
+  template: '<div class="container"> <div class="card"> <div class="card-block"> <h2 class="card-title"> {{ user.displayName }} </h2> <h4 class="card-subtitle mb-2 text-muted"> Are you sure to share your infomation with {{ querySet.appName }}? </h4> <p class="card-text"> These infomation will get by it: </p> </div> <ul class="list-group list-group-flush"> <li class="list-group-item"> Indicate your identity </li> <li class="list-group-item"> Get your username </li> <li class="list-group-item"> Get your avatar </li> <div class="card-block"> <p class="card-text text-muted">Once you continue, you will be redirected to <code>{{ querySet.callback }}</code></p> <h6 class="card-subtitle">Continue or Not?</h6> <button type="button" id="id_jumpButton" class="btn btn-outline-primary btn-lg" v-on:click="jumpOut">Continue</button> <p class="card-text" v-if="isProgress">Please wait...</p> </div> </div> </div>'
 };
 
 Vue.use(VueRouter);

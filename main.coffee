@@ -63,7 +63,7 @@ loginPage = {
         <input type="password" id="inputPassword" class="form-control" placeholder="Password" v-model.trim="password" required>
         <label for="inputPasswordAgain" class="sr-only">Password again</label>
         <input v-if="isRegister" type="password" id="inputPasswordAgain" class="form-control" placeholder="Password again" v-model.trim="passwordAgain" required>
-        <button class="btn btn-lg btn-primary btn-block" v-on:click="withEmail">Sign in</button>
+        <button class="btn btn-lg btn-primary btn-block" v-on:click="withEmail" v-if="!isRegister">Sign in</button>
         <button class="btn btn-lg btn-secondary btn-block" v-on:click="registerWithEmail" >Sign up</button>
         <div id="id_thirdparty">
         <div class="dropdown">
@@ -85,6 +85,7 @@ jumpOutPage = {
 	name:"jump_out_page"
 	data:() -> {
 		'querySet': this.$router.currentRoute.query,
+		'isProgress':false
 	}
 	computed:{
 		'user': {
@@ -102,7 +103,16 @@ jumpOutPage = {
 			this.$parent.errTitle = title
 			this.$parent.hasErr = true
 
+		'toggleButton': () -> 
+			b = $('id_jumpButton')
+			if b.hasClass('disabled')
+				b.removeClass('disabled')
+			else
+				b.addClass('disabled')
+
 		'jumpOut': () -> 
+			this.isProgress = true
+			this.toggleButton()
 			$.post({
 				'url': this.querySet.callback
 				'data': {
@@ -131,9 +141,10 @@ jumpOutPage = {
 	    <li class="list-group-item"> Get your username </li>
 	    <li class="list-group-item"> Get your avatar </li>
 	  <div class="card-block">
-	    <p class="card-text text-muted">Once you continue, you will be redirected to {{ querySet.callback }}</p>
+	    <p class="card-text text-muted">Once you continue, you will be redirected to <code>{{ querySet.callback }}</code></p>
 	    <h6 class="card-subtitle">Continue or Not?</h6>
-	    <button class="btn btn-lg" v-on:click="jumpOut">Continue</button>
+	    <button type="button" id="id_jumpButton" class="btn btn-outline-primary btn-lg" v-on:click="jumpOut">Continue</button>
+	    <p class="card-text" v-if="isProgress">Please wait...</p>
 	    </div>
 	  </div>
 	</div>
